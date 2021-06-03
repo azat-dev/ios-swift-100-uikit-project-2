@@ -15,6 +15,8 @@ class ViewController: UIViewController {
     
     var round = 0
     var score = 0
+    var prevHighestScore: Int?
+    
     var correctAnswerIndex = 0
     var correctCountry: String {
         countries[correctAnswerIndex]
@@ -70,6 +72,8 @@ class ViewController: UIViewController {
         button3.layer.borderColor = UIColor.lightGray.cgColor
         
         askQuestion()
+        
+        prevHighestScore = UserDefaults.standard.integer(forKey: "highestScore")
     }
     
     @objc func shareButtonTapped() {
@@ -104,10 +108,15 @@ class ViewController: UIViewController {
             messageRightCountry = "That’s the flag of \(actualCountry.uppercased())"
         }
         
-        let messageScore: String
+        var messageScore: String
         
         if round == 10 {
             messageScore = "Your final score is \(score)"
+            if prevHighestScore != nil && score > prevHighestScore! {
+                messageScore += "\nA new record!🎉🎉🎉"
+            }
+            
+            saveHighestScore(score: score)
         } else {
             messageScore = "Your score is \(score)"
         }
@@ -139,6 +148,11 @@ class ViewController: UIViewController {
         )
         
         present(alertController, animated: true)
+    }
+    
+    private func saveHighestScore(score: Int) {
+        UserDefaults.standard.setValue(score, forKey: "highestScore")
+        prevHighestScore = score
     }
 }
 
